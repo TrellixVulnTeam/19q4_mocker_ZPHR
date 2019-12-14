@@ -1,5 +1,7 @@
+from .config import CONTAINER_LOGFILE
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import Volume
 
 
 class Logs(MockerCommand):
@@ -12,7 +14,9 @@ class Logs(MockerCommand):
 
     @with_logging
     def apply(self, container_id):
-        raise NotImplementedError()
+        volume = Volume.get_container(container_id)
+        logfile = volume.path() / CONTAINER_LOGFILE
+        print(logfile.read_text())
 
     def __call__(self, args):
         container_id = args.container_id

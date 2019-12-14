@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import IMAGE, list_volumes
 
 
 class Images(MockerCommand):
@@ -11,7 +12,7 @@ class Images(MockerCommand):
 
     @with_logging
     def apply(self):
-        raise NotImplementedError()
+        list_volumes(IMAGE)
 
     def __call__(self, args):
         self.apply()

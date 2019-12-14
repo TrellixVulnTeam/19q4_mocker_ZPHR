@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import Volume, delete
 
 
 class RemoveImage(MockerCommand):
@@ -12,7 +13,8 @@ class RemoveImage(MockerCommand):
 
     @with_logging
     def apply(self, image_id):
-        raise NotImplementedError()
+        volume = Volume.get_image(image_id)
+        delete(volume)
 
     def __call__(self, args):
         image_id = args.image_id

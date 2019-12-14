@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import Volume, delete
 
 
 class RemoveContainer(MockerCommand):
@@ -12,7 +13,8 @@ class RemoveContainer(MockerCommand):
 
     @with_logging
     def apply(self, container_id):
-        raise NotImplementedError()
+        volume = Volume.get_image(container_id)
+        delete(volume)
 
     def __call__(self, args):
         container_id = args.container_id

@@ -1,9 +1,6 @@
-from pathlib import Path
-
 import btrfsutil as btfrs
 
-
-BTFRS_PATH = Path('/var/mocker')
+from .config import BTFRS_PATH
 
 
 class VolumeType:
@@ -24,6 +21,14 @@ class Volume:
     def __init__(self, id, type):
         self.id = id
         self.type = type
+
+    @staticmethod
+    def get_image(id):
+        return Volume(id, IMAGE)
+
+    @staticmethod
+    def get_container(id):
+        return Volume(id, CONTAINER)
 
     def name(self):
         return self.type.prefix + str(self.id)

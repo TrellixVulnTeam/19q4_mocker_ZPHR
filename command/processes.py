@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import CONTAINER, list_volumes
 
 
 class Processes(MockerCommand):
@@ -11,7 +12,7 @@ class Processes(MockerCommand):
 
     @with_logging
     def apply(self):
-        raise NotImplementedError()
+        list_volumes(CONTAINER)
 
     def __call__(self, args):
         self.apply()

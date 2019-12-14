@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
 from .utils import with_logging
+from .volume import Volume, copy
 
 
 class Commit(MockerCommand):
@@ -13,7 +14,9 @@ class Commit(MockerCommand):
 
     @with_logging
     def apply(self, container_id, image_id):
-        raise NotImplementedError()
+        container_volume = Volume.get_container(container_id)
+        image_volume = Volume.get_container(image_id)
+        copy(container_volume, image_volume)
 
     def __call__(self, args):
         container_id = args.container_id
