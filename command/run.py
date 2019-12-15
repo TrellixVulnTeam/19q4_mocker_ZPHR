@@ -61,6 +61,7 @@ class Run(MockerCommand):
 
         pid = str(process.pid)
         print('Running process with pid: ' + pid + '\n', end='')
+        #print(container_volume.path() / CONTAINER_PIDFILE)
         (container_volume.path() / CONTAINER_PIDFILE).write_text(pid)
 
         log_file_path = container_volume.path() / CONTAINER_LOGFILE
@@ -69,6 +70,8 @@ class Run(MockerCommand):
                 sys.stdout.write(line)
                 logfile.write(line)
         process.wait()
+
+        #(container_volume.path() / CONTAINER_PIDFILE).unlink()
 
     @utils.with_logging
     def apply(self, image_id, command, cpu_limit, memory_limit):
@@ -88,7 +91,6 @@ class Run(MockerCommand):
             def preexec():
                 cgroup.add(os.getpid())
                 netns.setns(netns_names.netns)
-                os.chdir(str(container_volume.path()))
 
             try:
                 Run._run_process(container_volume, command, preexec)
