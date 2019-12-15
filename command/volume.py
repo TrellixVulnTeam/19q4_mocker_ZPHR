@@ -1,6 +1,6 @@
 import btrfsutil as btfrs
 
-from .config import BTFRS_PATH
+from .config import VOLUMES_PATH
 
 
 class VolumeType:
@@ -34,7 +34,7 @@ class Volume:
         return self.type.prefix + str(self.id)
 
     def path(self):
-        return BTFRS_PATH / self.name()
+        return VOLUMES_PATH / self.name()
 
     def exists(self):
         return self.path().exists()
@@ -53,7 +53,7 @@ def list_volumes(type_):
           'VOLUME_NAME',
           *[name.upper() for name in type_.properties.keys()],
           sep='\t')
-    for volume in BTFRS_PATH.iterdir():
+    for volume in VOLUMES_PATH.iterdir():
         name = volume.name
         if not name.startswith(type_.prefix):
             continue

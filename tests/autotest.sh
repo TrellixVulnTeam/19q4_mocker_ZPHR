@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BTRFS_PATH=/var/mocker
+VOLUMES_PATH=/var/mocker/volumes
 MOCKER=${1:-mocker}
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -12,7 +12,7 @@ BUSYBOX_DIR=$TEST_RESOURCES_DIR/busybox
 
 function clean() {
     echo "--- Cleaning After Tests ---"
-    btrfs subvolume delete /var/mocker/*
+    btrfs subvolume delete /var/mocker/volumes/*
     echo "--- Cleaned ---"
     echo ""
 }
@@ -33,20 +33,20 @@ function test_init() {
 
     $MOCKER init $HELLO_DIR
     echo "[ls src] $(ls -1 $HELLO_DIR | tr '\n' ' ')"
-    echo "[ls img] $(ls -1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
-    echo "[cat .mocker_src] $(cat $BTRFS_PATH/img_0/.mocker_src)"
+    echo "[ls img] $(ls -1 $VOLUMES_PATH/img_0 | tr '\n' ' ')"
+    echo "[cat .mocker_src] $(cat $VOLUMES_PATH/img_0/.mocker_src)"
     echo ""
 
     $MOCKER init $GOODBYE_DIR
     echo "[ls src] $(ls -1 $GOODBYE_DIR | tr '\n' ' ')"
-    echo "[ls img] $(ls -1 $BTRFS_PATH/img_1 | tr '\n' ' ')"
-    echo "[cat .mocker_src] $(cat $BTRFS_PATH/img_1/.mocker_src)"
+    echo "[ls img] $(ls -1 $VOLUMES_PATH/img_1 | tr '\n' ' ')"
+    echo "[cat .mocker_src] $(cat $VOLUMES_PATH/img_1/.mocker_src)"
     echo ""
 
     $MOCKER init $BUSYBOX_DIR
     echo "[ls src] $(ls -1 $BUSYBOX_DIR | tr '\n' ' ')"
-    echo "[ls img] $(ls -1 $BTRFS_PATH/img_2 | tr '\n' ' ')"
-    echo "[cat .mocker_src] $(cat $BTRFS_PATH/img_2/.mocker_src)"
+    echo "[ls img] $(ls -1 $VOLUMES_PATH/img_2 | tr '\n' ' ')"
+    echo "[cat .mocker_src] $(cat $VOLUMES_PATH/img_2/.mocker_src)"
     echo ""
 
     clean
@@ -112,11 +112,11 @@ function test_run() {
     echo ""
 
     sudo $MOCKER run 0 ./busybox ls
-    echo "[cat .mocker_cmd] $(cat $BTRFS_PATH/ps_2/.mocker_cmd)"
+    echo "[cat .mocker_cmd] $(cat $VOLUMES_PATH/ps_2/.mocker_cmd)"
     echo ""
 
     sudo $MOCKER run 0 ./busybox cat download
-    echo "[cat .mocker_cmd] $(cat $BTRFS_PATH/ps_3/.mocker_cmd)"
+    echo "[cat .mocker_cmd] $(cat $VOLUMES_PATH/ps_3/.mocker_cmd)"
     echo ""
 
     clean
@@ -181,12 +181,12 @@ function test_logs() {
     echo "[cat src]"
     ls -1 $BUSYBOX_DIR
     echo "[cat log]"
-    cat $BTRFS_PATH/ps_2/.log
+    cat $VOLUMES_PATH/ps_2/.log
     echo ""
 
     sudo $MOCKER run 0 ./busybox cat download
     echo "[cat src] $(cat $BUSYBOX_DIR/download)"
-    echo "[cat log] $(cat $BTRFS_PATH/ps_3/.log)"
+    echo "[cat log] $(cat $VOLUMES_PATH/ps_3/.log)"
     echo ""
 
     clean
@@ -196,21 +196,21 @@ function test_commit() {
     echo -e "\n=== Testing commit ==="
 
     $MOCKER init $BUSYBOX_DIR
-    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
+    echo "[ls  img dir] $(ls -a1 $VOLUMES_PATH/img_0 | tr '\n' ' ')"
     echo ""
 
     sudo $MOCKER run 0 ./busybox cat download
     echo ""
     $MOCKER commit 2 0
-    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
-    echo "[cat img cmd] $(cat $BTRFS_PATH/img_0/.mocker_cmd)"
+    echo "[ls  img dir] $(ls -a1 $VOLUMES_PATH/img_0 | tr '\n' ' ')"
+    echo "[cat img cmd] $(cat $VOLUMES_PATH/img_0/.mocker_cmd)"
     echo ""
 
     sudo $MOCKER run 0 ./busybox ls
     echo ""
     $MOCKER commit 3 0
-    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
-    echo "[cat img cmd] $(cat $BTRFS_PATH/img_0/.mocker_cmd)"
+    echo "[ls  img dir] $(ls -a1 $VOLUMES_PATH/img_0 | tr '\n' ' ')"
+    echo "[cat img cmd] $(cat $VOLUMES_PATH/img_0/.mocker_cmd)"
     echo ""
 
     clean

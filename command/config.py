@@ -1,6 +1,6 @@
 from pathlib import Path
 
 
-BTFRS_PATH = Path('/var/mocker')
+VOLUMES_PATH = Path('/var/mocker/volumes')
 
 CONTAINER_LOGFILE = '.log'
