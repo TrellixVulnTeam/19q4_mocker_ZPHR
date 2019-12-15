@@ -3,6 +3,8 @@
 VOLUMES_PATH=/var/mocker/volumes
 MOCKER=${1:-mocker}
 
+CGROUP_PREFIX=cgroup_
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TEST_RESOURCES_DIR=$SCRIPT_DIR/resources
 HELLO_DIR=$TEST_RESOURCES_DIR/hello
@@ -119,6 +121,23 @@ function test_run() {
     echo "[cat .mocker_cmd] $(cat $VOLUMES_PATH/ps_3/.mocker_cmd)"
     echo ""
 
+    echo "--- Testing run: cgroups ---"
+    CGROUPS_PATH=/sys/fs/cgroup
+    CGROUPS_CPU_PATH=$CGROUPS_PATH/cpu/root
+    CGROUPS_MEM_PATH=$CGROUPS_PATH/memory/root
+
+    sudo $MOCKER run 0 ./busybox ls
+    CGROUP=${CGROUP_PREFIX}4
+    echo "[cat cpu limit] $(cat $CGROUPS_CPU_PATH/$CGROUP/cpu.shares)"
+    echo "[cat mem limit] $(cat $CGROUPS_MEM_PATH/$CGROUP/memory.limit_in_bytes)"
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox ls -c 50 -m 2048
+    CGROUP=${CGROUP_PREFIX}5
+    echo "[cat cpu limit] $(cat $CGROUPS_CPU_PATH/$CGROUP/cpu.shares)"
+    echo "[cat mem limit] $(cat $CGROUPS_MEM_PATH/$CGROUP/memory.limit_in_bytes)"
+    echo ""
+
     clean
 }
 
@@ -160,8 +179,8 @@ function test_rm() {
     $MOCKER ps
     echo ""
 
-    $MOCKER rm 2
-    $MOCKER rm 4
+    sudo $MOCKER rm 2
+    sudo $MOCKER rm 4
     echo ""
 
     $MOCKER ps
