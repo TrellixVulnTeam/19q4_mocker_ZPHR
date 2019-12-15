@@ -138,6 +138,17 @@ function test_run() {
     echo "[cat mem limit] $(cat $CGROUPS_MEM_PATH/$CGROUP/memory.limit_in_bytes)"
     echo ""
 
+    echo "--- Testing run: netns ---"
+    echo "Show interfaces"
+    sudo mocker run 0 ./busybox ip address show
+    echo ""
+    echo "Ping Loopback"
+    sudo mocker run 0 ./busybox timeout 3 ./busybox ping 127.0.0.1
+    echo ""
+    echo "Ping Self"
+    sudo mocker run 0 ./busybox timeout 3 ./busybox ping 10.0.0.8
+    echo ""
+
     clean
 }
 
@@ -207,6 +218,8 @@ function test_logs() {
     echo "[cat src] $(cat $BUSYBOX_DIR/download)"
     echo "[cat log] $(cat $VOLUMES_PATH/ps_3/.log)"
     echo ""
+
+    connect veth0 to local ip?
 
     clean
 }

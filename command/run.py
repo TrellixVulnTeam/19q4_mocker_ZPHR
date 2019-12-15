@@ -2,9 +2,11 @@ import os
 import subprocess
 import sys
 
+from pyroute2 import IPDB, netns
+
+from . import utils
 from .config import CONTAINER_LOGFILE
 from .mocker_command import MockerCommand
-from .utils import can_chroot, create_cgroup, with_logging
 from .volume import CONTAINER, Volume, create, copy
 
 
@@ -25,7 +27,20 @@ class Run(MockerCommand):
                             help='Memory limit (MB)')
         parser.set_defaults(mocker_command=self)
 
-    @with_logging
+    def run_process(self, container_volume, command, preexec):
+        process = subprocess.Popen(
+            command, preexec_fn=preexec, shell=False,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            universal_newlines=True)
+
+        log_file_path = container_volume.path() / CONTAINER_LOGFILE
+        with open(str(log_file_path), 'w') as logfile:
+            for line in process.stdout:
+                sys.stdout.write(line)
+                logfile.write(line)
+        process.wait()
+
+    @utils.with_logging
     def apply(self, image_id, command, cpu_limit, memory_limit):
         image_volume = Volume.get_image(image_id)
         container_volume = create(CONTAINER)
@@ -35,28 +50,24 @@ class Run(MockerCommand):
             container_volume.path() / CONTAINER.properties['command']
         cmd_file_path.write_text(' '.join(command) + '\n')
 
-        cgroup = create_cgroup(container_volume.id, cpu_limit, memory_limit)
+        cgroup = utils.create_cgroup(container_volume.id, cpu_limit, memory_limit)
 
-        def preexec():
-            cgroup.add(os.getpid())
-            os.chdir(str(container_volume.path()))
-            os.chroot(str(container_volume.path()))
+        with IPDB() as ipdb:
+            netns_names = utils.create_netns(container_volume.id, ipdb)
 
-        log_file_path = container_volume.path() / CONTAINER_LOGFILE
+            def preexec():
+                cgroup.add(os.getpid())
+                netns.setns(netns_names.netns)
+                os.chdir(str(container_volume.path()))
+                os.chroot(str(container_volume.path()))
 
-        process = subprocess.Popen(
-            command, preexec_fn=preexec, shell=False,
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            universal_newlines=True)
-
-        with open(str(log_file_path), 'w') as logfile:
-            for line in process.stdout:
-                sys.stdout.write(line)
-                logfile.write(line)
-        process.wait()
+            try:
+                self.run_process(container_volume, command, preexec)
+            finally:
+                utils.delete_netns(netns_names, ipdb)
 
     def __call__(self, args):
-        if not can_chroot():
+        if not utils.can_chroot():
             raise PermissionError('chroot requires root privileges')
 
         image_id = args.image_id
