@@ -99,9 +99,14 @@ function test_rmi() {
 
 function test_pull() {
     echo -e "\n=== Testing pull ==="
-    echo "NOT IMPLEMENTED"
 
     $MOCKER pull hello-world
+    echo "[ls img] $(ls -1 $VOLUMES_PATH/img_0 | tr '\n' ' ')"
+    echo ""
+
+    $MOCKER pull alpine
+    echo "[ls img] $(ls -1 $VOLUMES_PATH/img_1 | tr '\n' ' ')"
+    echo ""
 
     clean
 }
@@ -218,8 +223,6 @@ function test_logs() {
     echo "[cat src] $(cat $BUSYBOX_DIR/download)"
     echo "[cat log] $(cat $VOLUMES_PATH/ps_3/.log)"
     echo ""
-
-    connect veth0 to local ip?
 
     clean
 }

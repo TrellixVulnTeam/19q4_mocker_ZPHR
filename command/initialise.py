@@ -32,7 +32,6 @@ class Initialise(MockerCommand):
         source_file = volume.path() / IMAGE.properties['source']
         source_file.write_text(str(path) + '\n')
 
-
     def __call__(self, args):
         directory = args.directory
         self.apply(directory=directory)

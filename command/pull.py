@@ -1,5 +1,6 @@
 from .mocker_command import MockerCommand
-from .utils import with_logging
+from .utils import download_image_from_dockerhub, with_logging
+from .volume import IMAGE, create
 
 
 class Pull(MockerCommand):
@@ -14,7 +15,8 @@ class Pull(MockerCommand):
 
     @with_logging
     def apply(self, image):
-        raise NotImplementedError()
+        volume = create(IMAGE)
+        download_image_from_dockerhub(image, volume.path())
 
     def __call__(self, args):
         image = args.image
