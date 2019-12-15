@@ -1,3 +1,15 @@
+import os
+
+
+def can_chroot():
+    try:
+        os.chroot('/')
+    except PermissionError:
+        return False
+    else:
+        return True
+
+
 def with_logging(function):
     def wrapper(self, *args, **kwargs):
         print("mocker.py " + self.NAME + " ", end="")

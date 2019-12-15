@@ -7,6 +7,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TEST_RESOURCES_DIR=$SCRIPT_DIR/resources
 HELLO_DIR=$TEST_RESOURCES_DIR/hello
 GOODBYE_DIR=$TEST_RESOURCES_DIR/goodbye
+BUSYBOX_DIR=$TEST_RESOURCES_DIR/busybox
 
 
 function clean() {
@@ -16,6 +17,7 @@ function clean() {
     echo ""
 }
 
+
 function test_help() {
     echo -e "\n=== Testing help ==="
 
@@ -24,6 +26,7 @@ function test_help() {
 
     clean
 }
+
 
 function test_init() {
     echo -e "\n=== Testing init ==="
@@ -40,6 +43,12 @@ function test_init() {
     echo "[cat .mocker_src] $(cat $BTRFS_PATH/img_1/.mocker_src)"
     echo ""
 
+    $MOCKER init $BUSYBOX_DIR
+    echo "[ls src] $(ls -1 $BUSYBOX_DIR | tr '\n' ' ')"
+    echo "[ls img] $(ls -1 $BTRFS_PATH/img_2 | tr '\n' ' ')"
+    echo "[cat .mocker_src] $(cat $BTRFS_PATH/img_2/.mocker_src)"
+    echo ""
+
     clean
 }
 
@@ -53,6 +62,10 @@ function test_images() {
     $MOCKER images
     echo ""
     $MOCKER init $GOODBYE_DIR
+    echo ""
+    $MOCKER images
+    echo ""
+    $MOCKER init $BUSYBOX_DIR
     echo ""
     $MOCKER images
     echo ""
@@ -81,6 +94,7 @@ function test_rmi() {
     clean
 }
 
+
 function test_pull() {
     echo -e "\n=== Testing pull ==="
     echo "NOT IMPLEMENTED"
@@ -90,56 +104,124 @@ function test_pull() {
     clean
 }
 
+
 function test_run() {
     echo -e "\n=== Testing run ==="
-    echo "NOT IMPLEMENTED"
 
-    #$MOCKER run
+    $MOCKER init $BUSYBOX_DIR
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox ls
+    echo "[cat .mocker_cmd] $(cat $BTRFS_PATH/ps_2/.mocker_cmd)"
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox cat download
+    echo "[cat .mocker_cmd] $(cat $BTRFS_PATH/ps_3/.mocker_cmd)"
+    echo ""
 
     clean
 }
 
 function test_ps() {
     echo -e "\n=== Testing ps ==="
-    echo "NOT IMPLEMENTED"
 
-    #$MOCKER ps
+    $MOCKER init $BUSYBOX_DIR
+    echo ""
+
+    $MOCKER ps
+    echo ""
+    sudo $MOCKER run 0 ./busybox ls
+    echo ""
+    $MOCKER ps
+    echo ""
+    sudo $MOCKER run 0 ./busybox cat download
+    echo ""
+    $MOCKER ps
+    echo ""
+    sudo $MOCKER run 0 ./busybox ls
+    echo ""
+    $MOCKER ps
+    echo ""
 
     clean
 }
 
 function test_rm() {
     echo -e "\n=== Testing rm ==="
-    echo "NOT IMPLEMENTED"
 
-    #$MOCKER rm
+    $MOCKER init $BUSYBOX_DIR
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox ls
+    sudo $MOCKER run 0 ./busybox ls
+    sudo $MOCKER run 0 ./busybox ls
+    echo ""
+
+    $MOCKER ps
+    echo ""
+
+    $MOCKER rm 2
+    $MOCKER rm 4
+    echo ""
+
+    $MOCKER ps
+    echo ""
 
     clean
 }
+
 
 function test_logs() {
     echo -e "\n=== Testing logs ==="
-    echo "NOT IMPLEMENTED"
 
-    #$MOCKER logs
+    $MOCKER init $BUSYBOX_DIR
+    echo ""
 
-    clean
-}
+    sudo $MOCKER run 0 ./busybox ls
+    echo "[cat src]"
+    ls -1 $BUSYBOX_DIR
+    echo "[cat log]"
+    cat $BTRFS_PATH/ps_2/.log
+    echo ""
 
-function test_exec() {
-    echo -e "\n=== Testing exec ==="
-    echo "NOT IMPLEMENTED"
-
-    #$MOCKER exec
+    sudo $MOCKER run 0 ./busybox cat download
+    echo "[cat src] $(cat $BUSYBOX_DIR/download)"
+    echo "[cat log] $(cat $BTRFS_PATH/ps_3/.log)"
+    echo ""
 
     clean
 }
 
 function test_commit() {
     echo -e "\n=== Testing commit ==="
+
+    $MOCKER init $BUSYBOX_DIR
+    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox cat download
+    echo ""
+    $MOCKER commit 2 0
+    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
+    echo "[cat img cmd] $(cat $BTRFS_PATH/img_0/.mocker_cmd)"
+    echo ""
+
+    sudo $MOCKER run 0 ./busybox ls
+    echo ""
+    $MOCKER commit 3 0
+    echo "[ls  img dir] $(ls -a1 $BTRFS_PATH/img_0 | tr '\n' ' ')"
+    echo "[cat img cmd] $(cat $BTRFS_PATH/img_0/.mocker_cmd)"
+    echo ""
+
+    clean
+}
+
+
+function test_exec() {
+    echo -e "\n=== Testing exec ==="
     echo "NOT IMPLEMENTED"
 
-    #$MOCKER commit
+    #$MOCKER exec
 
     clean
 }
@@ -158,6 +240,6 @@ test_ps
 test_rm
 
 test_logs
-test_exec
-
 test_commit
+
+test_exec

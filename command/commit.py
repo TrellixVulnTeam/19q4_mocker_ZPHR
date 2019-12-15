@@ -15,7 +15,7 @@ class Commit(MockerCommand):
     @with_logging
     def apply(self, container_id, image_id):
         container_volume = Volume.get_container(container_id)
-        image_volume = Volume.get_container(image_id)
+        image_volume = Volume.get_image(image_id)
         copy(container_volume, image_volume)
 
     def __call__(self, args):

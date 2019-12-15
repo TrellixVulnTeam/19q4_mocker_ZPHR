@@ -50,15 +50,20 @@ class NoFreeVolumeError(Exception):
 
 def list_volumes(type_):
     print(type_.name + '_ID',
+          'VOLUME_NAME',
           *[name.upper() for name in type_.properties.keys()],
           sep='\t')
     for volume in BTFRS_PATH.iterdir():
-        if not volume.name.startswith(type_.prefix):
+        name = volume.name
+        if not name.startswith(type_.prefix):
             continue
+
         properties = []
         for path in type_.properties.values():
             properties.append((volume / path).read_text().strip())
-        print(volume.name, *properties, sep='\t\t')
+
+        id_ = name[len(type_.prefix):]
+        print(id_, volume.name, *properties, sep='\t\t')
 
 
 def get_free_volume(type_):

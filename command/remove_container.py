@@ -13,7 +13,7 @@ class RemoveContainer(MockerCommand):
 
     @with_logging
     def apply(self, container_id):
-        volume = Volume.get_image(container_id)
+        volume = Volume.get_container(container_id)
         delete(volume)
 
     def __call__(self, args):
