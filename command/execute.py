@@ -26,7 +26,10 @@ class Execute(MockerCommand):
         parser.set_defaults(mocker_command=self)
 
     @staticmethod
-    def _run_process(container_volume, command, preexec, container_pid):
+    def _run_process(container_volume, command, preexec):
+        container_pid = \
+            (container_volume.path() / CONTAINER_PIDFILE).read_text()
+
         command_str = ' '.join(command)
 
         command_with_namespaces = \
@@ -52,7 +55,7 @@ class Execute(MockerCommand):
         def preexec():
             get_cgroup(container_id).add(os.getpid())
 
-        Execute._run_process(volume, command, preexec, container_pid)
+        Execute._run_process(volume, command, preexec)
 
     def __call__(self, args):
         if not can_chroot():
