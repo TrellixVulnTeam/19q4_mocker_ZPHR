@@ -10,8 +10,10 @@ class Initialise(MockerCommand):
     NAME = 'init'
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
-        parser.add_argument('directory', type=str)
+        parser = subparsers.add_parser(
+            self.NAME, help='create image from directory')
+        parser.add_argument('directory', type=str,
+                            help='directory for image base')
         parser.set_defaults(mocker_command=self)
 
     @with_logging

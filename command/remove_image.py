@@ -7,8 +7,10 @@ class RemoveImage(MockerCommand):
     NAME = 'rmi'
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
-        parser.add_argument('image_id', type=int)
+        parser = subparsers.add_parser(
+            self.NAME, help='remove image')
+        parser.add_argument('image_id', type=int,
+                            help='id of image to remove')
         parser.set_defaults(mocker_command=self)
 
     @with_logging

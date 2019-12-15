@@ -13,7 +13,8 @@ class Help(MockerCommand):
         self.additional_message = additional_message
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
+        parser = subparsers.add_parser(
+            self.NAME, help='print help')
         parser.set_defaults(mocker_command=self)
 
     @with_logging

@@ -7,9 +7,12 @@ class Commit(MockerCommand):
     NAME = 'commit'
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
-        parser.add_argument('container_id', type=int)
-        parser.add_argument('image_id', type=int)
+        parser = subparsers.add_parser(
+            self.NAME, help='apply changes made in container to image')
+        parser.add_argument('container_id', type=int,
+                            help='id of container containing changes')
+        parser.add_argument('image_id', type=int,
+                            help='id of image to write changes to')
         parser.set_defaults(mocker_command=self)
 
     @with_logging

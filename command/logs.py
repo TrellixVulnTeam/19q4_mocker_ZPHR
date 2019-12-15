@@ -8,8 +8,10 @@ class Logs(MockerCommand):
     NAME = 'logs'
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
-        parser.add_argument('container_id', type=int)
+        parser = subparsers.add_parser(
+            self.NAME, help='print container logs')
+        parser.add_argument('container_id', type=int,
+                            help='id of container to print logs of')
         parser.set_defaults(mocker_command=self)
 
     @with_logging

@@ -7,7 +7,8 @@ class Images(MockerCommand):
     NAME = 'images'
 
     def add_parser_to(self, subparsers):
-        parser = subparsers.add_parser(self.NAME)
+        parser = subparsers.add_parser(
+            self.NAME, help='list all image volumes')
         parser.set_defaults(mocker_command=self)
 
     @with_logging
