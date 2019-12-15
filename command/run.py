@@ -70,6 +70,8 @@ class Run(MockerCommand):
                 logfile.write(line)
         process.wait()
 
+        (container_volume.path() / CONTAINER_PIDFILE).unlink()
+
     @utils.with_logging
     def apply(self, image_id, command, cpu_limit, memory_limit):
         image_volume = Volume.get_image(image_id)
@@ -88,7 +90,6 @@ class Run(MockerCommand):
             def preexec():
                 cgroup.add(os.getpid())
                 netns.setns(netns_names.netns)
-                os.chdir(str(container_volume.path()))
 
             try:
                 Run._run_process(container_volume, command, preexec)
