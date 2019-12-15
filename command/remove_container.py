@@ -13,6 +13,7 @@ class RemoveContainer(MockerCommand):
 
     @with_logging
     def apply(self, container_id):
+        #raise NotImplementedError("Not deleting cgroup")
         volume = Volume.get_container(container_id)
         delete(volume)
 

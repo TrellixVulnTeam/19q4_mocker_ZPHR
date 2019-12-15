@@ -12,7 +12,7 @@ BUSYBOX_DIR=$TEST_RESOURCES_DIR/busybox
 
 function clean() {
     echo "--- Cleaning After Tests ---"
-    btrfs subvolume delete /var/mocker/volumes/*
+    $MOCKER clean
     echo "--- Cleaned ---"
     echo ""
 }

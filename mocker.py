@@ -29,6 +29,7 @@ def get_argparser():
         command.RemoveContainer(),
         command.Commit(),
         command.Help(parser),
+        command.Clean(),
     ]
 
     for mocker_command in mocker_commands:

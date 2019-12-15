@@ -15,6 +15,7 @@ IMAGE = VolumeType(
     'IMAGE', 'img_', range(1000), source='.mocker_src')
 CONTAINER = VolumeType(
     'CONTAINER', 'ps_', range(2, 255), command='.mocker_cmd')
+VOLUME_TYPES = [IMAGE, CONTAINER]
 
 
 class Volume:
@@ -64,6 +65,17 @@ def list_volumes(type_):
 
         id_ = name[len(type_.prefix):]
         print(id_, volume.name, *properties, sep='\t\t')
+
+
+def delete_volumes(type_):
+    for volume_path in VOLUMES_PATH.iterdir():
+        name = volume_path.name
+        if not name.startswith(type_.prefix):
+            continue
+
+        id_ = name[len(type_.prefix):]
+        volume = Volume(id_, type_)
+        delete(volume)
 
 
 def get_free_volume(type_):

@@ -1,3 +1,4 @@
+from .clean import Clean
 from .commit import Commit
 from .execute import Execute
 from .help import Help
