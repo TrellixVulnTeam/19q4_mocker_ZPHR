@@ -32,7 +32,7 @@ def get_single_layer(image, blobsum, auth_header):
     print('Downloading layer with ' + BLOBSUM_KEY + ': ' + blobsum)
 
     request_layer_url = \
-        'https://registry-1.docker.io/v2/library/'\
+        'https://registry-1.docker.io/v2/library/' \
         + image + \
         '/blobs/' + blobsum
     response = requests.get(request_layer_url, headers=auth_header)

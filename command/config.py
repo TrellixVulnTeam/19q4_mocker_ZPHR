@@ -1,7 +1,9 @@
 from pathlib import Path
 
-CONTAINER_LOGFILE = '.log'
 VOLUMES_PATH = Path('/var/mocker/volumes')
+
+CONTAINER_LOGFILE = '.log'
+CONTAINER_PIDFILE = '.pid'
 
 CGROUP_PREFIX = 'cgroup_'
 

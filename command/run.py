@@ -1,11 +1,12 @@
 import os
+import shlex
 import subprocess
 import sys
 
 from pyroute2 import IPDB, netns
 
 from . import utils
-from .config import CONTAINER_LOGFILE
+from .config import CONTAINER_LOGFILE, CONTAINER_PIDFILE
 from .mocker_command import MockerCommand
 from .volume import CONTAINER, Volume, create, copy
 
@@ -20,18 +21,47 @@ class Run(MockerCommand):
         parser.add_argument('image_id', type=int,
                             help='image to use for container')
         parser.add_argument('command', type=str, nargs='+',
-                            help='command to run inside container')
+                            help='command to run inside container'
+                                 '(HINT: )')
         parser.add_argument('-c', '--cpu-limit', type=int, default=10,
                             help='CPU shares limit (0-100)')
         parser.add_argument('-m', '--memory-limit', type=int, default=1024,
                             help='Memory limit (MB)')
         parser.set_defaults(mocker_command=self)
 
-    def run_process(self, container_volume, command, preexec):
+    @staticmethod
+    def _get_str_command_with_mount(container_volume, command):
+        command_str = ' '.join(command)
+
+        if (container_volume.path() / 'bin/sh').exists():
+            str_command_with_mount = \
+                '/bin/sh -c "/bin/mount -t proc proc /proc && ' \
+                + command_str + \
+                '"'
+        else:
+            str_command_with_mount = command_str
+
+        return str_command_with_mount
+
+    @staticmethod
+    def _run_process(container_volume, command, preexec):
+        str_command_with_mount = Run._get_str_command_with_mount(
+            container_volume, command)
+
+        command_with_namespaces = \
+            'unshare -f -m -u -i -p --mount-proc ' \
+            'chroot ' + str(container_volume.path()) + ' ' \
+            + str_command_with_mount
+
         process = subprocess.Popen(
-            command, preexec_fn=preexec, shell=False,
+            shlex.split(command_with_namespaces),
+            preexec_fn=preexec, shell=False,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             universal_newlines=True)
+
+        pid = str(process.pid)
+        print('Running process with pid: ' + pid + '\n', end='')
+        (container_volume.path() / CONTAINER_PIDFILE).write_text(pid)
 
         log_file_path = container_volume.path() / CONTAINER_LOGFILE
         with open(str(log_file_path), 'w') as logfile:
@@ -59,10 +89,9 @@ class Run(MockerCommand):
                 cgroup.add(os.getpid())
                 netns.setns(netns_names.netns)
                 os.chdir(str(container_volume.path()))
-                os.chroot(str(container_volume.path()))
 
             try:
-                self.run_process(container_volume, command, preexec)
+                Run._run_process(container_volume, command, preexec)
             finally:
                 utils.delete_netns(netns_names, ipdb)
 

@@ -115,6 +115,16 @@ function test_pull() {
 function test_run() {
     echo -e "\n=== Testing run ==="
 
+    echo "--- Testing run: hello-world ---"
+    $MOCKER pull hello-world
+    echo ""
+    sudo $MOCKER run 0 ./hello
+    echo ""
+
+    clean
+
+    echo "--- Testing run: busybox ---"
+
     $MOCKER init $BUSYBOX_DIR
     echo ""
 
@@ -137,7 +147,7 @@ function test_run() {
     echo "[cat mem limit] $(cat $CGROUPS_MEM_PATH/$CGROUP/memory.limit_in_bytes)"
     echo ""
 
-    sudo $MOCKER run 0 ./busybox ls -c 50 -m 2048
+    sudo $MOCKER run 0 -c 50 -m 2048 ./busybox ls
     CGROUP=${CGROUP_PREFIX}5
     echo "[cat cpu limit] $(cat $CGROUPS_CPU_PATH/$CGROUP/cpu.shares)"
     echo "[cat mem limit] $(cat $CGROUPS_MEM_PATH/$CGROUP/memory.limit_in_bytes)"
@@ -148,10 +158,23 @@ function test_run() {
     sudo mocker run 0 ./busybox ip address show
     echo ""
     echo "Ping Loopback"
-    sudo mocker run 0 ./busybox timeout 3 ./busybox ping 127.0.0.1
+    sudo mocker run 0 -- ./busybox ping -c 3 127.0.0.1
     echo ""
     echo "Ping Self"
-    sudo mocker run 0 ./busybox timeout 3 ./busybox ping 10.0.0.8
+    sudo mocker run 0 -- ./busybox ping -c 3 10.0.0.8
+    echo ""
+
+    clean
+
+    echo "--- Testing run: alpine ---"
+    $MOCKER pull alpine
+    echo ""
+
+    sudo $MOCKER run 0 -- ls
+    echo ""
+
+    echo "--- Testing run: pid namespace ---"
+    sudo $MOCKER run 0 -- ps aux
     echo ""
 
     clean
