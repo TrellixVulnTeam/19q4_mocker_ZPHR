@@ -1,6 +1,8 @@
+# https://docs.gitlab.com/runner/executors/docker.html#use-docker-in-docker-with-privileged-mode
 image: docker:git
 services:
 - docker:dind
+# https://gitlab.com/gitlab-org/gitlab-foss/issues/64959
 variables:
   DOCKER_TLS_CERTDIR: ""
 
