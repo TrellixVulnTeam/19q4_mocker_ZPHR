@@ -16,14 +16,14 @@ class RemoveContainer(MockerCommand):
 
     @with_logging
     def apply(self, container_id):
-        volume = Volume.get_container(container_id)
-        delete_cgroup(container_id)
-        delete(volume)
-
-    def __call__(self, args):
         try:
-            container_id = args.container_id
-            self.apply(container_id=container_id)
+            volume = Volume.get_container(container_id)
+            delete_cgroup(container_id)
+            delete(volume)
         except PermissionError:
             raise PermissionError(
                 "root required: removing containers involves changing cgroups")
+
+    def __call__(self, args):
+        container_id = args.container_id
+        self.apply(container_id=container_id)

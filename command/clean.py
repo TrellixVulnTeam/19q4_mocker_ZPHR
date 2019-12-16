@@ -1,6 +1,8 @@
 from .mocker_command import MockerCommand
+from .remove_image import RemoveImage
+from .remove_container import RemoveContainer
 from .utils import with_logging
-from .volume import VOLUME_TYPES, delete_volumes
+from .volume import IMAGE, CONTAINER, VOLUMES_PATH
 
 
 class Clean(MockerCommand):
@@ -8,14 +10,24 @@ class Clean(MockerCommand):
 
     def add_parser_to(self, subparsers):
         parser = subparsers.add_parser(
-            self.NAME, help='remove all volumes (images, containers)')
+            self.NAME, help='run rmi,rm on all images,containers (MAY REQUIRE ROOT)')
         parser.set_defaults(mocker_command=self)
 
     @with_logging
     def apply(self):
-        for type_ in VOLUME_TYPES:
-            print("Deleting: " + type_.name)
-            delete_volumes(type_)
+        removers = {
+            IMAGE: RemoveImage(),
+            CONTAINER: RemoveContainer(),
+        }
+
+        for type_, remover in removers.items():
+            for volume_path in VOLUMES_PATH.iterdir():
+                name = volume_path.name
+                if not name.startswith(type_.prefix):
+                    continue
+
+                id_ = name[len(type_.prefix):]
+                remover.apply(int(id_))
 
     def __call__(self, args):
         self.apply()

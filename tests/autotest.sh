@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 VOLUMES_PATH=/var/mocker/volumes
 MOCKER=${1:-mocker}
@@ -14,7 +15,7 @@ BUSYBOX_DIR=$TEST_RESOURCES_DIR/busybox
 
 function clean() {
     echo "--- Cleaning After Tests ---"
-    $MOCKER clean
+    sudo $MOCKER clean
     echo "--- Cleaned ---"
     echo ""
 }
@@ -278,6 +279,9 @@ function test_commit() {
 function test_exec() {
     echo -e "\n=== Testing exec ==="
     echo "NOT IMPLEMENTED"
+
+
+    sudo $MOCKER run 0 ./busybox ls
 
     #$MOCKER exec
 
