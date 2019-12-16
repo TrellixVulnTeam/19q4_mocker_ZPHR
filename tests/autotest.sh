@@ -286,7 +286,7 @@ function test_exec() {
     echo ""
     sleep 1
 
-    sudo $MOCKER exec 2 -- ls -
+    sudo $MOCKER exec 2 -- ls -ah
     echo ""
 
     sudo $MOCKER exec 2 -- cat /.mocker_cmd
