@@ -278,13 +278,24 @@ function test_commit() {
 
 function test_exec() {
     echo -e "\n=== Testing exec ==="
-    echo "NOT IMPLEMENTED"
 
+    $MOCKER pull alpine
+    echo ""
 
-    sudo $MOCKER run 0 ./busybox ls
+    sudo $MOCKER run 0 -- sleep 5 &
+    echo ""
+    sleep 1
 
-    #$MOCKER exec
+    sudo $MOCKER exec 2 -- ls -
+    echo ""
 
+    sudo $MOCKER exec 2 -- cat /.mocker_cmd
+    echo ""
+
+    sudo $MOCKER exec 2 -- ps aux
+    echo ""
+
+    sleep 4
     clean
 }
 
