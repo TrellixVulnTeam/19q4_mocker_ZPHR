@@ -1,3 +1,6 @@
+import contextlib
+import os
+
 import cgroups
 
 from ..config import CGROUP_PREFIX
@@ -5,7 +8,8 @@ from ..config import CGROUP_PREFIX
 
 def get_cgroup(container_id):
     cgroup_id = get_cgroup_id(container_id)
-    return cgroups.Cgroup(cgroup_id)
+    with contextlib.redirect_stderr(open(os.devnull, 'w')):
+        return cgroups.Cgroup(cgroup_id)
 
 
 def create_cgroup(container_id, cpu_limit, memory_limit):
