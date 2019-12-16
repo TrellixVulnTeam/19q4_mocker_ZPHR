@@ -5,6 +5,7 @@ sudo apt install -y autoconf pkg-config
 sudo apt install -y asciidoc xmlto --no-install-recommends
 sudo apt install -y uuid-dev libattr1-dev zlib1g-dev libacl1-dev e2fslibs-dev libblkid-dev liblzo2-dev
 
+cd /tmp
 git clone https://github.com/kdave/btrfs-progs.git
 cd btrfs-progs
 
@@ -17,5 +18,5 @@ sudo make install
 make
 sudo make install_python
 
-cd ..
+cd ~
 ) 2>&1
