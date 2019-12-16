@@ -1,4 +1,8 @@
-image: docker
+image: docker:stable-dind
+
+# fix for docker daemon: https://gitlab.com/gitlab-org/gitlab-foss/issues/64959
+variables:
+  DOCKER_TLS_CERTDIR: ""
 
 stages:
   - build
@@ -12,3 +16,4 @@ build:
   script:
     - docker build -t test .
     - docker run --privileged test  # btrfs mounting requires --privileged
+
