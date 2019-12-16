@@ -1,6 +1,8 @@
 image: docker:git
 services:
 - docker:dind
+variables:
+  DOCKER_TLS_CERTDIR: ""
 
 build:
   tags:
