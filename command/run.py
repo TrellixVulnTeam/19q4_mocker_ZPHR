@@ -74,6 +74,9 @@ class Run(MockerCommand):
 
     @utils.with_logging
     def apply(self, image_id, command, cpu_limit, memory_limit):
+        if not utils.can_chroot():
+            raise PermissionError('chroot requires root privileges')
+
         image_volume = Volume.get_image(image_id)
         container_volume = create(CONTAINER)
         copy(image_volume, container_volume)
@@ -97,9 +100,6 @@ class Run(MockerCommand):
                 utils.delete_netns(netns_names, ipdb)
 
     def __call__(self, args):
-        if not utils.can_chroot():
-            raise PermissionError('chroot requires root privileges')
-
         image_id = args.image_id
         command = args.command
         cpu_limit = args.cpu_limit

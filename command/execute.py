@@ -47,6 +47,8 @@ class Execute(MockerCommand):
     def apply(self, container_id, command):
         volume = Volume.get_container(container_id)
 
+        if not can_chroot():
+            raise PermissionError('chroot requires root privileges')
         if not volume.path().exists():
             raise FileNotFoundError("container does not exist")
         if not (volume.path() / CONTAINER_PIDFILE).exists():
@@ -58,9 +60,6 @@ class Execute(MockerCommand):
         Execute._run_process(volume, command, preexec)
 
     def __call__(self, args):
-        if not can_chroot():
-            raise PermissionError('chroot requires root privileges')
-
         container_id = args.container_id
         command = args.command
         self.apply(container_id=container_id, command=command)
