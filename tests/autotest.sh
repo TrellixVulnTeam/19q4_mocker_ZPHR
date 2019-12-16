@@ -299,9 +299,6 @@ function test_exec() {
     clean
 }
 
-echo "Failing tests"
-exit 1
-
 test_help
 
 test_init

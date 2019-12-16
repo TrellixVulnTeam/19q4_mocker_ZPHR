@@ -1,5 +1,7 @@
 # Mocker: Python Docker Implementation
 
+See Gitlab CI pipeline for tests output.
+
 Launch tests in Vagrant
 
 ```
