@@ -11,6 +11,7 @@ test:
     - master
   script:
     - ./bootstrap/setup_general.sh
+    - ./bootstrap/setup_links_gitlab.sh
     - ./bootstrap/setup_python.sh
     - ./bootstrap/btrfs_install.sh
     - ./bootstrap/volumes_create.sh
