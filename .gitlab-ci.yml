@@ -1,14 +1,8 @@
-image: docker:stable-dind
-
-# fix for docker daemon: https://gitlab.com/gitlab-org/gitlab-foss/issues/64959
-variables:
-  DOCKER_TLS_CERTDIR: ""
-
-stages:
-  - build
+image: docker:git
+services:
+- docker:dind
 
 build:
-  stage: build
   tags:
     - docker-atp
   only:
