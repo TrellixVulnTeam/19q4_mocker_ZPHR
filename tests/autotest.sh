@@ -282,7 +282,7 @@ function test_exec() {
     $MOCKER pull alpine
     echo ""
 
-    sudo $MOCKER run 0 -- sleep 5 &
+    sudo $MOCKER run 0 -- sleep 10 &
     echo ""
     sleep 1
 
@@ -295,7 +295,7 @@ function test_exec() {
     sudo $MOCKER exec 2 -- ps aux
     echo ""
 
-    sleep 4
+    sleep 10
     clean
 }
 

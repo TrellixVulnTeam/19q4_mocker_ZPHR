@@ -1,13 +1,14 @@
-image: ubuntu:xenial
+image: docker
 
 stages:
-  - test
+  - build
 
-test:
-  stage: test
+build:
+  stage: build
   tags:
     - docker-atp
   only:
     - master
   script:
-    - cat ./mocker.py
+    - docker build -t test .
+    - docker run --privileged test  # btrfs mounting requires --privileged
